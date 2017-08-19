@@ -63,6 +63,7 @@ normalexit () {
 
 #------------------------------------------------------------------------------
 # Logging/rerun sanity check.
+
 touch "$DEPLOYUTIL_LOGPATH" \
   || die "Failed when writing the log file ${DEPLOYUTIL_LOGPATH}: error ${?}"
 timestamp=$(date) \
