@@ -3,6 +3,18 @@
 #
 # setup_rstudio_generic.sh: set up R & RStudio Server on Ubuntu.
 #
+# This should install R from a CRAN mirror and RStudio Server from rstudio.org
+# for AMD64 Ubuntu, permanently adding CRAN to the sources apt-get uses
+# and explicitly trusting the package maintainer's signing key. It should
+# run non-interacively, and will record most of the errors that prevent
+# installation in a permanent log file. If the installation succeeds it creates
+# a status flag file, and avoids unneccesary re-installation attempts if it
+# detects this on subsequent runs. It expects full access to the filesystem
+# and apt configuration, so must run as root or through sudo; you can re-assign
+# the environment variables it uses to override many defaults. It is based on
+# https://msperlin.github.io/2017-06-01-Instaling-R-in-Linux/
+# and in particular presents the same list of packages to `apt-get install`.
+#
 #------------------------------------------------------------------------------
 set -eu
 
