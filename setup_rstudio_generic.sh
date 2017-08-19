@@ -15,15 +15,6 @@ set -eu
 # Label for this specific installation
 : "${DEPLOYUTIL_LABEL:=generic R and RStudio}"
 
-# Where to put our files within the filesystem
-: "${DEPLOYUTIL_PREFIX:=/usr/local}"
-
-# Permanent log for recording the setup progress
-: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_PREFIX/var/log/$DEPLOYUTIL_OURNAME.log}"
-
-# Flag file to create on a successful run
-: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_PREFIX/etc/$DEPLOYUTIL_OURNAME.status}"
-
 # CRAN mirror URL
 : "${DEPLOYUTIL_CRANMIRROR:=https://cloud.r-project.org/}"
 
@@ -35,6 +26,18 @@ set -eu
 
 # RStudio Server apt package (.deb) filename
 : "${DEPLOYUTIL_RSTUDIODEB:=rstudio-server-1.0.153-amd64.deb}"
+
+# Where to put our log files within the filesystem
+: "${DEPLOYUTIL_LOGDIR:=/var/local/log}"
+
+# Permanent log for recording the setup progress
+: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_LOGDIR/$DEPLOYUTIL_OURNAME.log}"
+
+# Where to put our configuration files within the filesystem
+: "${DEPLOYUTIL_CONFIGDIR:=/usr/local/etc}"
+
+# Flag file to create on a successful run
+: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$DEPLOYUTIL_OURNAME.status}"
 
 #------------------------------------------------------------------------------
 # Utility functions definitions.
@@ -64,10 +67,16 @@ normalexit () {
 #------------------------------------------------------------------------------
 # Logging/rerun sanity check.
 
+[ -d "$DEPLOYUTIL_LOGDIR" ] \
+  || mkdir -p "$DEPLOYUTIL_LOGDIR" \
+     || die "No directory ${DEPLOYUTIL_LOGDIR} for log files"
 touch "$DEPLOYUTIL_LOGPATH" \
   || die "Failed when writing the log file ${DEPLOYUTIL_LOGPATH}: error ${?}"
 timestamp=$(date) \
   || errorexit "Couldn't get the current time to make log entries"
+[ -d "$DEPLOYUTIL_CONFIGDIR" ] \
+  || mkdir -p "$DEPLOYUTIL_CONFIGDIR" \
+     || errorexit "No directory ${DEPLOYUTIL_CONFIGDIR} for config files"
 [ ! -e "$DEPLOYUTIL_STATUSPATH" ] \
   || normalexit "Re-run on ${timestamp}, but ${DEPLOYUTIL_OURNAME} has already run"
 
