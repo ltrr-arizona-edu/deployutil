@@ -13,7 +13,7 @@ set -eu
 : "${DEPLOYUTIL_OURNAME:=setup_rstudio_generic}"
 
 # Label for this specific installation
-: "${DEPLOYUTIL_SUBTYPE:=generic R and RStudio}"
+: "${DEPLOYUTIL_LABEL:=generic R and RStudio}"
 
 # Where to put our files within the filesystem
 : "${DEPLOYUTIL_PREFIX:=/usr/local}"
@@ -24,7 +24,7 @@ set -eu
 # Flag file to create on a successful run
 : "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_PREFIX/etc/$DEPLOYUTIL_OURNAME.status}"
 
-# CRAN mirror hostname
+# CRAN mirror URL
 : "${DEPLOYUTIL_CRANMIRROR:=https://cloud.r-project.org/}"
 
 # Base release codename
@@ -73,11 +73,14 @@ timestamp=$(date) \
 #------------------------------------------------------------------------------
 # Ubuntu package installation and configuration.
 
-logmessage "Started installing the ${DEPLOYUTIL_SUBTYPE} at ${timestamp}"
-echo "deb ${DEPLOYUTIL_CRANMIRROR}/bin/linux/ubuntu ${DEPLOYUTIL_RELEASENAME}/" > /etc/apt/sources.list.d/cran.list \
-  || errorexit "Could not add the CRAN mirror ${DEPLOYUTIL_CRANMIRROR} to the apt sources"
+logmessage "Started installing the ${DEPLOYUTIL_LABEL} at ${timestamp}"
+newsource="deb ${DEPLOYUTIL_CRANMIRROR}/bin/linux/ubuntu ${DEPLOYUTIL_RELEASENAME}/"
+echo "$newsource" > /etc/apt/sources.list.d/cran.list \
+  || errorexit "Could not add the CRAN mirror to the apt sources as '${newsource}'"
+logmessage "Permanently added the CRAN mirror to the apt sources as '${newsource}'"
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 \
   || errorexit "Failed when adding the Ubuntu-specific signing key for CRAN deb packages"
+logmessage "Permanently added the Ubuntu-specific signing key for CRAN deb packages"
 apt-get update \
   || errorexit "Could not refresh the Ubuntu (apt) package information"
 logmessage "Starting to install apt packages"
@@ -121,4 +124,4 @@ gdebi -n "$DEPLOYUTIL_RSTUDIODEB" \
   || errorexit "Failed when installing RStudio Server"
 echo "OK" > "$DEPLOYUTIL_STATUSPATH" \
   || errorexit "You must manually create a ${DEPLOYUTIL_STATUSPATH} file to prevent repeated runs"
-normalexit "Successfully set up ${DEPLOYUTIL_SUBTYPE}"
+normalexit "Successfully set up ${DEPLOYUTIL_LABEL}"
