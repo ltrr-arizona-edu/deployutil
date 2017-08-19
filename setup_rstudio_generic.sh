@@ -22,7 +22,7 @@ set -eu
 : "${DEPLOYUTIL_RELEASENAME:=xenial}"
 
 # RStudio download URL
-: "${DEPLOYUTIL_RSTUDIOURL:=https://download1.rstudio.org/}"
+: "${DEPLOYUTIL_RSTUDIOURL:=https://download2.rstudio.org/}"
 
 # RStudio Server apt package (.deb) filename
 : "${DEPLOYUTIL_RSTUDIODEB:=rstudio-server-1.0.153-amd64.deb}"
