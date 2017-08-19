@@ -85,7 +85,6 @@ apt-get install -y \
   libx11-dev \
   libxml2-dev \
   mesa-common-dev \
-  mesa-common-dev \
   openjdk-7-* \
   r-base \
   r-base-dev \
