@@ -136,8 +136,8 @@ apt-get install -y \
 R CMD javareconf \
   || errorexit "Failed when trying to detect current the Java setup and update the corresponding configuration in R"
 logmessage "Starting to download and install RStudio Server"
-scratchdir=$(mktemp -d -t "deployutil_scratch_XXXXXX") \
-  || errorexit "Couldn't make a scratch directory for the RStudio Server download"
+scratchdir=$(mktemp -d -t "${DEPLOYUTIL_OURNAME}_XXXXXX") \
+  || errorexit "Couldn't make a scratch directory for the ${DEPLOYUTIL_LABEL}"
 trap 'rm -Rf "${scratchdir}"' EXIT TERM INT QUIT
 cd "$scratchdir"
 wget "${DEPLOYUTIL_RSTUDIOURL}${DEPLOYUTIL_RSTUDIODEB}" \

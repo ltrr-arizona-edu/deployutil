@@ -3,7 +3,6 @@
 #
 # fetch_r_code_fagments.sh: fetch files containing R code from a Git repository.
 #
-#
 #------------------------------------------------------------------------------
 set -eu
 
@@ -27,6 +26,9 @@ set -eu
 
 # Absolute destination directory path
 : "${DEPLOYUTIL_DESTDIR:=/usr/local/src/R}"
+
+# Destination alias link
+: "${DEPLOYUTIL_DESTLINK:=code}"
 
 # Where to put our log files within the filesystem
 : "${DEPLOYUTIL_LOGDIR:=/var/local/log}"
@@ -82,7 +84,7 @@ timestamp=$(date) \
   || normalexit "Re-run on ${timestamp}, but ${DEPLOYUTIL_OURNAME} has already run"
 
 #------------------------------------------------------------------------------
-# Ubuntu package installation and configuration.
+# Git repository subdirectory copy.
 
 logmessage "Started the ${DEPLOYUTIL_LABEL} at ${timestamp}"
 scratchdir=$(mktemp -d -t "${DEPLOYUTIL_OURNAME}_XXXXXX") \
@@ -101,6 +103,27 @@ logmessage "Made a local shallow clone of the ${DEPLOYUTIL_SOURCEBRANCH} branch 
   || errorexit "The destination ${DEPLOYUTIL_DESTDIR} already exists"
 cp -R "$DEPLOYUTIL_SOURCEDIR" "$DEPLOYUTIL_DESTDIR" \
   || errorexit "Couldn't copy from ${DEPLOYUTIL_SOURCEDIR} to ${DEPLOYUTIL_DESTDIR}"
+logmessage "Copied from ${DEPLOYUTIL_SOURCEDIR} to ${DEPLOYUTIL_DESTDIR}"
+
+#------------------------------------------------------------------------------
+# Symlink the copy into all home directories.
+
+. /etc/adduser.conf \
+  || errorexit "Can't pick up the default user account settings"
+[ -n "$DHOME" ] \
+  || errorexit "Can't find the default user home directory location"
+for home in "$DHOME"/* ; do
+  if { echo "$home" | grep -q -v 'lost+found'; } ; then
+    symlink="${home}/${DEPLOYUTIL_DESTLINK}"
+    ln -s "$DEPLOYUTIL_DESTDIR" "$symlink" \
+      || errorexit "Couldn't make a symbolic link ${symlink} for ${DEPLOYUTIL_DESTDIR}"
+    logmessage "Symlinked ${DEPLOYUTIL_DESTDIR} as ${symlink}"
+  fi
+done
+
+#------------------------------------------------------------------------------
+# Mark completion.
+
 echo "OK" > "$DEPLOYUTIL_STATUSPATH" \
   || errorexit "You must manually create a ${DEPLOYUTIL_STATUSPATH} file to prevent repeated runs"
-normalexit "Successfully set up ${DEPLOYUTIL_LABEL}"
+normalexit "Successfully completed ${DEPLOYUTIL_LABEL}"
