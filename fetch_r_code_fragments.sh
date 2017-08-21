@@ -3,6 +3,15 @@
 #
 # fetch_r_code_fagments.sh: fetch files containing R code from a Git repository.
 #
+# This extracts a subdirectory containing code fragments from a Git repository
+# and makes it available to all users on the system through a symlink in their
+# home directories. It should run non-interacively, and will record most of the
+# errors that prevent installation in a permanent log file. If the installation
+# succeeds it creates a status flag file, and avoids unneccesary re-installation
+# attempts if it detects this on subsequent runs. It expects full access to the
+# filesystem to create the copy, so must run as root or through sudo; you can
+# re-assign the environment variables it uses to override many defaults.
+#
 #------------------------------------------------------------------------------
 set -eu
 
