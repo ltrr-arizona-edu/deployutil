@@ -10,10 +10,10 @@ set -eu
 # Environment variables and semi-constants.
 
 # Our short, machine-intelligible name (don't trust $0)
-: "${DEPLOYUTIL_OURNAME:=fetch_r_code_fagments}"
+ourname="fetch_r_code_fagments"
 
 # Label for this specific installation
-: "${DEPLOYUTIL_LABEL:=R code fragment retrieval}"
+ourlabel="R code fragment retrieval"
 
 # Source Git repository
 : "${DEPLOYUTIL_SOURCEREPO:=https://github.com/mekevans/pecan.git}"
@@ -34,13 +34,13 @@ set -eu
 : "${DEPLOYUTIL_LOGDIR:=/var/local/log}"
 
 # Permanent log for recording the setup progress
-: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_LOGDIR/$DEPLOYUTIL_OURNAME.log}"
+: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_LOGDIR/$ourname.log}"
 
 # Where to put our configuration files within the filesystem
 : "${DEPLOYUTIL_CONFIGDIR:=/usr/local/etc}"
 
 # Flag file to create on a successful run
-: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$DEPLOYUTIL_OURNAME.status}"
+: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$ourname.status}"
 
 #------------------------------------------------------------------------------
 # Utility functions definitions.
@@ -81,14 +81,14 @@ timestamp=$(date) \
   || mkdir -p "$DEPLOYUTIL_CONFIGDIR" \
      || errorexit "No directory ${DEPLOYUTIL_CONFIGDIR} for config files"
 [ ! -e "$DEPLOYUTIL_STATUSPATH" ] \
-  || normalexit "Re-run on ${timestamp}, but ${DEPLOYUTIL_OURNAME} has already run"
+  || normalexit "Re-run on ${timestamp}, but ${ourname} has already run"
 
 #------------------------------------------------------------------------------
 # Git repository subdirectory copy.
 
-logmessage "Started the ${DEPLOYUTIL_LABEL} at ${timestamp}"
-scratchdir=$(mktemp -d -t "${DEPLOYUTIL_OURNAME}_XXXXXX") \
-  || errorexit "Couldn't make a scratch directory for the ${DEPLOYUTIL_LABEL}"
+logmessage "Started the ${ourlabel} at ${timestamp}"
+scratchdir=$(mktemp -d -t "${ourname}_XXXXXX") \
+  || errorexit "Couldn't make a scratch directory for the ${ourlabel}"
 trap 'rm -Rf "${scratchdir}"' EXIT TERM INT QUIT
 cd "$scratchdir"
 git clone --depth 1 --branch "$DEPLOYUTIL_SOURCEBRANCH" "$DEPLOYUTIL_SOURCEREPO" \
@@ -126,4 +126,4 @@ done
 
 echo "OK" > "$DEPLOYUTIL_STATUSPATH" \
   || errorexit "You must manually create a ${DEPLOYUTIL_STATUSPATH} file to prevent repeated runs"
-normalexit "Successfully completed ${DEPLOYUTIL_LABEL}"
+normalexit "Successfully completed ${ourlabel}"

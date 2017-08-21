@@ -22,10 +22,10 @@ set -eu
 # Environment variables and semi-constants.
 
 # Our short, machine-intelligible name (don't trust $0)
-: "${DEPLOYUTIL_OURNAME:=setup_rstudio_generic}"
+ourname="setup_rstudio_generic"
 
 # Label for this specific installation
-: "${DEPLOYUTIL_LABEL:=generic R and RStudio}"
+ourlabel="generic R and RStudio"
 
 # CRAN mirror URL
 : "${DEPLOYUTIL_CRANMIRROR:=https://cloud.r-project.org/}"
@@ -43,13 +43,13 @@ set -eu
 : "${DEPLOYUTIL_LOGDIR:=/var/local/log}"
 
 # Permanent log for recording the setup progress
-: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_LOGDIR/$DEPLOYUTIL_OURNAME.log}"
+: "${DEPLOYUTIL_LOGPATH:=$DEPLOYUTIL_LOGDIR/$ourname.log}"
 
 # Where to put our configuration files within the filesystem
 : "${DEPLOYUTIL_CONFIGDIR:=/usr/local/etc}"
 
 # Flag file to create on a successful run
-: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$DEPLOYUTIL_OURNAME.status}"
+: "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$ourname.status}"
 
 #------------------------------------------------------------------------------
 # Utility functions definitions.
@@ -90,12 +90,12 @@ timestamp=$(date) \
   || mkdir -p "$DEPLOYUTIL_CONFIGDIR" \
      || errorexit "No directory ${DEPLOYUTIL_CONFIGDIR} for config files"
 [ ! -e "$DEPLOYUTIL_STATUSPATH" ] \
-  || normalexit "Re-run on ${timestamp}, but ${DEPLOYUTIL_OURNAME} has already run"
+  || normalexit "Re-run on ${timestamp}, but ${ourname} has already run"
 
 #------------------------------------------------------------------------------
 # Ubuntu package installation and configuration.
 
-logmessage "Started installing the ${DEPLOYUTIL_LABEL} at ${timestamp}"
+logmessage "Started installing the ${ourlabel} at ${timestamp}"
 newsource="deb ${DEPLOYUTIL_CRANMIRROR}/bin/linux/ubuntu ${DEPLOYUTIL_RELEASENAME}/"
 echo "$newsource" > /etc/apt/sources.list.d/cran.list \
   || errorexit "Could not add the CRAN mirror to the apt sources as '${newsource}'"
@@ -136,8 +136,8 @@ apt-get install -y \
 R CMD javareconf \
   || errorexit "Failed when trying to detect current the Java setup and update the corresponding configuration in R"
 logmessage "Starting to download and install RStudio Server"
-scratchdir=$(mktemp -d -t "${DEPLOYUTIL_OURNAME}_XXXXXX") \
-  || errorexit "Couldn't make a scratch directory for the ${DEPLOYUTIL_LABEL}"
+scratchdir=$(mktemp -d -t "${ourname}_XXXXXX") \
+  || errorexit "Couldn't make a scratch directory for the ${ourlabel}"
 trap 'rm -Rf "${scratchdir}"' EXIT TERM INT QUIT
 cd "$scratchdir"
 wget "${DEPLOYUTIL_RSTUDIOURL}${DEPLOYUTIL_RSTUDIODEB}" \
@@ -146,4 +146,4 @@ gdebi -n "$DEPLOYUTIL_RSTUDIODEB" \
   || errorexit "Failed when installing RStudio Server"
 echo "OK" > "$DEPLOYUTIL_STATUSPATH" \
   || errorexit "You must manually create a ${DEPLOYUTIL_STATUSPATH} file to prevent repeated runs"
-normalexit "Successfully set up ${DEPLOYUTIL_LABEL}"
+normalexit "Successfully set up ${ourlabel}"
