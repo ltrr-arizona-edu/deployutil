@@ -17,6 +17,9 @@
 # which should bring in the Ubuntu-packaged version of JAGS itself as a
 # dependency. It also specifies `r-cran-coda`, although this should get
 # installed in any case (as another dependency).
+# An installation script using the littler utility, copied from
+# http://dirk.eddelbuettel.com/code/littler.examples.html
+# allows adding CRAN packages which are not available through `apt-get install`.
 #
 #------------------------------------------------------------------------------
 set -eu
@@ -53,6 +56,18 @@ ourlabel="JAGS R and RStudio"
 
 # Flag file to create on a successful run
 : "${DEPLOYUTIL_STATUSPATH:=$DEPLOYUTIL_CONFIGDIR/$ourname.status}"
+
+# R library directory
+: "${DEPLOYUTIL_LIBDIR:=/usr/local/lib/R/site-library}"
+
+# Local executable directory
+: "${DEPLOYUTIL_BINDIR:=/usr/local/bin}"
+
+# Littler CRAN package installation script
+: "${DEPLOYUTIL_INSTALLER:=install.r}"
+
+# Path to the littler CRAN package installation script
+: "${DEPLOYUTIL_INSTALLERPATH:=$DEPLOYUTIL_BINDIR/$DEPLOYUTIL_INSTALLER}"
 
 #------------------------------------------------------------------------------
 # Utility functions definitions.
@@ -141,6 +156,19 @@ apt-get install -y \
   xml2
 R CMD javareconf \
   || errorexit "Failed when trying to detect current the Java setup and update the corresponding configuration in R"
+logmessage "Setting up the ${DEPLOYUTIL_INSTALLER} script for extra R packages"
+cat >> "$DEPLOYUTIL_INSTALLERPATH" << _EOF_
+#!/usr/bin/env r
+if (is.null(argv) | length(argv)<1) {
+  cat("Usage: ${DEPLOYUTIL_INSTALLER} pkg1 [pkg2 pkg3 ...]\n")
+  q()
+}
+repos <- ${DEPLOYUTIL_RSTUDIOURL}
+lib.loc <- ${DEPLOYUTIL_LIBDIR}
+install.packages(argv, lib.loc, repos)
+_EOF_
+chmod 755 "$DEPLOYUTIL_INSTALLERPATH" \
+  || errorexit "Could not make an executable package install script at ${DEPLOYUTIL_INSTALLERPATH}"
 logmessage "Starting to download and install RStudio Server"
 scratchdir=$(mktemp -d -t "${ourname}_XXXXXX") \
   || errorexit "Couldn't make a scratch directory for the ${ourlabel}"
