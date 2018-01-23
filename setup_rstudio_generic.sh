@@ -160,8 +160,8 @@ if (is.null(argv) | length(argv)<1) {
   cat("Usage: ${DEPLOYUTIL_INSTALLER} pkg1 [pkg2 pkg3 ...]\n")
   q()
 }
-repos <- ${DEPLOYUTIL_RSTUDIOURL}
-lib.loc <- ${DEPLOYUTIL_LIBDIR}
+repos <- "${DEPLOYUTIL_RSTUDIOURL}"
+lib.loc <- "${DEPLOYUTIL_LIBDIR}"
 install.packages(argv, lib.loc, repos)
 _EOF_
 chmod 755 "$DEPLOYUTIL_INSTALLERPATH" \
