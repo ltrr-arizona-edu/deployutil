@@ -163,7 +163,7 @@ if (is.null(argv) | length(argv)<1) {
   cat("Usage: ${DEPLOYUTIL_INSTALLER} pkg1 [pkg2 pkg3 ...]\n")
   q()
 }
-repos <- "${DEPLOYUTIL_RSTUDIOURL}"
+repos <- "${DEPLOYUTIL_CRANMIRROR}"
 lib.loc <- "${DEPLOYUTIL_LIBDIR}"
 install.packages(argv, lib.loc, repos)
 _EOF_

@@ -167,7 +167,7 @@ _EOF_
 chmod 755 "$DEPLOYUTIL_INSTALLERPATH" \
   || errorexit "Could not make an executable package install script at ${DEPLOYUTIL_INSTALLERPATH}"
 logmessage "Installing extra R packages"
-${DEPLOYUTIL_INSTALLER} lme4 MASS MuMIn \
+${DEPLOYUTIL_INSTALLER} lme4 MuMin \
   || errorexit "Failed when installing additional R packages"
 logmessage "Starting to download and install RStudio Server"
 scratchdir=$(mktemp -d -t "${ourname}_XXXXXX") \
