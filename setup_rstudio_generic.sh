@@ -111,16 +111,6 @@ timestamp=$(date) \
 # Ubuntu package installation and configuration.
 
 logmessage "Started installing the ${ourlabel} at ${timestamp}"
-newsource="deb ${DEPLOYUTIL_CRANMIRROR}/bin/linux/ubuntu ${DEPLOYUTIL_RELEASENAME}/"
-echo "$newsource" > /etc/apt/sources.list.d/cran.list \
-  || errorexit "Could not add the CRAN mirror to the apt sources as '${newsource}'"
-logmessage "Permanently added the CRAN mirror to the apt sources as '${newsource}'"
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 \
-  || errorexit "Failed when adding the Ubuntu-specific signing key for CRAN deb packages"
-logmessage "Permanently added the Ubuntu-specific signing key for CRAN deb packages"
-apt-get update \
-  || errorexit "Could not refresh the Ubuntu (apt) package information"
-logmessage "Starting to install apt packages"
 apt-get install -y \
   default-jdk \
   default-jre \
