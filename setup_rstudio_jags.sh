@@ -43,7 +43,7 @@ ourlabel="JAGS R and RStudio"
 : "${DEPLOYUTIL_RSTUDIOURL:=https://download2.rstudio.org/}"
 
 # RStudio Server apt package (.deb) filename
-: "${DEPLOYUTIL_RSTUDIODEB:=rstudio-server-1.0.153-amd64.deb}"
+: "${DEPLOYUTIL_RSTUDIODEB:=rstudio-server-1.1.453-amd64.deb}"
 
 # Where to put our log files within the filesystem
 : "${DEPLOYUTIL_LOGDIR:=/var/local/log}"
